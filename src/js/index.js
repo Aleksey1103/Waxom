@@ -1,13 +1,13 @@
 $(document).ready(function () {
      //Конфигурации страницы зависящие от исходной и изменяемой ширины окна
      var windowWidth = window.innerWidth;
-     counter = 7; // счетчик количества отображаемых элементов в блоке "block-projects-grid" в зависимости от ширины окна
+     counter = 5; // счетчик количества отображаемых элементов в блоке "block-projects-grid" в зависимости от ширины окна
      function projectsOnTop() {
         projectsTop = $('.block-projects').offset().top - 30;           
         $('body,html').animate({scrollTop: projectsTop}, 500);
      };
-     if (windowWidth<=1152) {counter = 5;}; 
-     if (windowWidth<=840) {counter = 3;};
+     if (windowWidth<=1152) {counter = 3;}; 
+     if (windowWidth<=840) {counter = 1;};
      //Включение модального меню при загрузке страницы   
      if (windowWidth<=1100) {
          $('.nav-list').addClass('modal');                         
@@ -16,23 +16,23 @@ $(document).ready(function () {
      $(window).resize(function(){        
         var resisedWidth = window.innerWidth;
         //Переключение количества отображаемых элементов в в блоке "block-projects-grid"
-        function visibilityCounter() {
-            $('.block-projects-grid-item:not(:nth-child(n+' + counter).show();
-            $(".block-projects-grid-item:nth-child(n+" + counter).hide();
+        function visibilityCounter() {           
+            $('.block-projects-grid-item:lt(' + (counter + 1) + ')').show();
+            $('.block-projects-grid-item:gt(' + counter + ')').hide();
             $('.page__btn_more').show().text('load more');
             $('.block-projects-nav__link').removeClass('active');
             $('#all').addClass('active');            
         };
         if (resisedWidth>1152) {
-            counter = 7;
-            visibilityCounter();
-        };            					
-        if (resisedWidth<=1152) {
             counter = 5;
             visibilityCounter();
         };            					
-        if (resisedWidth<=840) {
+        if (resisedWidth<=1152) {
             counter = 3;
+            visibilityCounter();
+        };            					
+        if (resisedWidth<=840) {
+            counter = 1;
             visibilityCounter();
         };
         //Переключение модального/немодального меню
@@ -44,7 +44,7 @@ $(document).ready(function () {
         };
      });        
     //Показать/скрыть дополнительные элементы блока "block-projects-grid"
-    $(".block-projects-grid-item:nth-child(n+" + counter).hide(); // начальное состояние дополнительных элементов
+    $('.block-projects-grid-item:gt(' + counter + ')').hide(); // начальное состояние дополнительных элементов
     $('.page__btn_more').click(function(){                       
         var itemVisibility = $('.block-projects-grid-item:hidden').length;            
         if (itemVisibility != 0 ) {
@@ -52,7 +52,7 @@ $(document).ready(function () {
             $('.page__btn_more').text('hide');
         }                
         else  {                
-            $(".block-projects-grid-item:nth-child(n+" + counter).fadeOut();                
+            $('.block-projects-grid-item:gt(' + counter + ')').fadeOut();                
             $('.page__btn_more').text('load more');
             projectsOnTop();            
         }            
@@ -63,12 +63,15 @@ $(document).ready(function () {
         $('.block-projects-nav__link').removeClass('active');
         $(this).addClass('active');
         var elementGroup = '.' + $(this).attr('id');            
-        $('.block-projects-grid-item:not(' +  elementGroup + ')').hide();
-        $(elementGroup).fadeIn();
-        $('.page__btn_more').hide();          
-        if (elementGroup == '.all') {                               
-            $('.block-projects-grid-item:not(:nth-child(n+' + counter).fadeIn();
+        if (elementGroup == '.all') {
+            $('.block-projects-grid-item').hide();
+            $('.block-projects-grid-item:lt(' + (counter + 1) + ')').fadeIn();            
             $('.page__btn_more').fadeIn().text('load more');          
+        }
+        else {
+            $('.block-projects-grid-item:not(' +  elementGroup + ')').hide();
+            $(elementGroup).fadeIn();
+            $('.page__btn_more').hide();
         }                            
     });
     //Ховер эффект элементов в блоке "block-projects-grid"    
@@ -119,7 +122,7 @@ $(document).ready(function () {
             ]
     });       
     //Плавный скроллинг по разделам страницы
-    $(".scroll").on("click", function (event) {
+    $('.scroll').on('click', function (event) {
         event.preventDefault();
         var id  = $(this).attr('href'),            
         top = $(id).offset().top;                 
@@ -130,10 +133,10 @@ $(document).ready(function () {
     $(window).scroll(function(){
         var windowScroll = $(window).scrollTop();
             if (windowScroll>1000) {
-                $(".btn-up").fadeIn();
+                $('.btn-up').fadeIn();
             }
             else {
-                $(".btn-up").fadeOut();
+                $('.btn-up').fadeOut();
             }
     });
     //Управление отображением поля поиска в разделе "page page_main" 
@@ -177,6 +180,7 @@ $(document).ready(function () {
         }
         if (searchingText == '') {
             $('.nav-search').fadeOut(200);
+            $('.btn-search svg').attr('fill', '#fff');
         }        
     });
     $('.nav-search__btn-close').click(function(){
@@ -187,6 +191,7 @@ $(document).ready(function () {
         $('.word-marker').removeClass('word-marker');
         $('.btn-search svg').attr('fill', '#fff');
     });
+     //Карусель в разделе "page page_posts"
     $('.block-posts').slick({
         arrows: true,
         loop: true,
